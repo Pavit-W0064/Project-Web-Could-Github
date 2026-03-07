@@ -79,6 +79,45 @@ app.get('/api/getAdmins', (req, res) => {
     });
 });
 
+// ==========================================
+// ADMIN: ADD ADMIN
+// ==========================================
+app.post('/api/addAdmin', (req, res) => {
+
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+        return res.json({ success: false, message: "ข้อมูลไม่ครบ" });
+    }
+
+    const checkSql = "SELECT * FROM queue_admin WHERE email = ?";
+
+    db.query(checkSql, [email], (err, result) => {
+        if (err) return res.json({ success: false });
+
+        if (result.length > 0) {
+            return res.json({
+                success: false,
+                message: "Email นี้ถูกใช้แล้ว"
+            });
+        }
+
+        const insertSql = `
+            INSERT INTO queue_admin (username, email, password)
+            VALUES (?, ?, ?)
+        `;
+
+        db.query(insertSql, [username, email, password], (err2) => {
+            if (err2) {
+                console.error(err2);
+                return res.json({ success: false });
+            }
+
+            res.json({ success: true });
+        });
+    });
+});
+
 
 // ==========================================
 // ADMIN: DELETE ADMIN

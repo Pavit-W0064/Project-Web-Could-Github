@@ -21,6 +21,7 @@
     </div>
     <div class="main">
         <h2>List of administrators</h2>
+        <button onclick="addAdmin()">➕ Add Admin</button>
 
         <table class="admin-list" id="adminTable">
             <tr>
@@ -93,6 +94,38 @@ async function deleteAdmin(id) {
     }
 }
 
+async function addAdmin() {
+
+    const username = prompt("Username:");
+    if (!username) return;
+
+    const email = prompt("Email:");
+    if (!email) return;
+
+    const password = prompt("Password:");
+    if (!password) return;
+
+    const res = await fetch(window.apiUrl('/api/addAdmin'), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username,
+            email,
+            password
+        })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+        alert("เพิ่มสำเร็จ");
+        loadAdmins();
+    } else {
+        alert(data.message || "เพิ่มไม่สำเร็จ");
+    }
+}
 
 async function editAdmin(id, username, email, password) {
 
